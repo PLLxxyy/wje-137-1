@@ -15,6 +15,17 @@ function isOverdue(nextDate: string) {
   return dueDate.getTime() <= today.getTime();
 }
 
+function hasSubsequentMaintenance(record: MaintenanceRecord, allRecords: MaintenanceRecord[]) {
+  const dueDate = new Date(record.nextDate);
+  dueDate.setHours(0, 0, 0, 0);
+  return allRecords.some((r) => {
+    if (r.id === record.id || r.vehicleId !== record.vehicleId) return false;
+    const maintenanceDate = new Date(r.date);
+    maintenanceDate.setHours(0, 0, 0, 0);
+    return maintenanceDate.getTime() >= dueDate.getTime();
+  });
+}
+
 type State = {
   alerts: AlertEvent[];
   resolve: (id: string) => void;
@@ -27,11 +38,22 @@ export const useAlertStore = create<State>((set, get) => ({
   checkMaintenanceDue: (records, vehicles) => {
     const { alerts: currentAlerts } = get();
     const newAlerts: AlertEvent[] = [];
+    const resolvedIds: string[] = [];
 
     records.forEach((record) => {
       if (!isOverdue(record.nextDate)) return;
 
       const alertId = generateMaintenanceAlertId(record.id);
+      const hasCompleted = hasSubsequentMaintenance(record, records);
+
+      if (hasCompleted) {
+        const existingAlert = currentAlerts.find((a) => a.id === alertId);
+        if (existingAlert && existingAlert.status !== AlertStatus.Resolved) {
+          resolvedIds.push(alertId);
+        }
+        return;
+      }
+
       const exists = currentAlerts.some((a) => a.id === alertId);
       if (exists) return;
 
@@ -49,8 +71,12 @@ export const useAlertStore = create<State>((set, get) => ({
       });
     });
 
-    if (newAlerts.length > 0) {
-      set({ alerts: [...currentAlerts, ...newAlerts] });
+    if (newAlerts.length > 0 || resolvedIds.length > 0) {
+      set((state) => ({
+        alerts: state.alerts
+          .map((a) => resolvedIds.includes(a.id) ? { ...a, status: AlertStatus.Resolved } : a)
+          .concat(newAlerts)
+      }));
     }
   }
 }));
