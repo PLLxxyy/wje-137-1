@@ -9,11 +9,19 @@ function Shell({ title, subtitle, children }: { title: string; subtitle: string;
 import { AlertBanner } from '../components/common/AlertBanner';
 import { StatusBadge } from '../components/common/StatusBadge';
 import { useAlertStore } from '../stores/alertStore';
+import { alertTypeNames } from '../constants/typeNames';
+import { alertColors } from '../constants/alertColors';
 
 export function AlertCenter() {
   const { alerts, resolve } = useAlertStore();
+  const sortedAlerts = [...alerts].sort((a, b) => {
+    if (a.status === 'New' && b.status !== 'New') return -1;
+    if (a.status !== 'New' && b.status === 'New') return 1;
+    return 0;
+  });
+
   return <Shell title="报警中心" subtitle="按报警类型和处理状态筛选，直接确认处理结果。">
     <AlertBanner title="新报警优先处理" detail="超速、围栏和维保类报警会影响调度可用性。" />
-    <div className="list" style={{ marginTop: 16 }}>{alerts.map((a) => <div className="row" key={a.id}><span><strong>{a.type}</strong><span className="block muted">{a.description}</span></span><span className="toolbar"><StatusBadge status={a.status} /><button className="badge" onClick={() => resolve(a.id)}>处理</button></span></div>)}</div>
+    <div className="list" style={{ marginTop: 16 }}>{sortedAlerts.map((a) => <div className="row" key={a.id}><span><strong style={{ color: alertColors[a.type] }}>{alertTypeNames[a.type]}</strong><span className="block muted">{a.description}</span></span><span className="toolbar"><StatusBadge status={a.status} /><button className="badge" onClick={() => resolve(a.id)}>处理</button></span></div>)}</div>
   </Shell>;
 }

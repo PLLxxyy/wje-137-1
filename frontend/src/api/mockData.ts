@@ -13,7 +13,8 @@ export const trips: TripRecord[] = [
 
 export const maintenance: MaintenanceRecord[] = [
   { id: 'm1', vehicleId: 'v1', type: MaintenanceType.Routine, items: ['机油', '制动检查'], cost: 1800, date: '2026-06-08', nextDate: '2026-09-08', vendor: '闵行维保站', note: '例行保养完成' },
-  { id: 'm2', vehicleId: 'v3', type: MaintenanceType.Repair, items: ['液压系统'], cost: 6200, date: '2026-06-12', nextDate: '2026-07-12', vendor: '宁波工程车服务', note: '等待配件到货' }
+  { id: 'm2', vehicleId: 'v3', type: MaintenanceType.Repair, items: ['液压系统'], cost: 6200, date: '2026-06-12', nextDate: '2026-07-12', vendor: '宁波工程车服务', note: '等待配件到货' },
+  { id: 'm3', vehicleId: 'v2', type: MaintenanceType.OilChange, items: ['发动机机油', '机滤'], cost: 850, date: '2026-03-01', nextDate: '2026-06-01', vendor: '苏州相城维保', note: '常规换油保养' }
 ];
 
 export const zones: ZoneStat[] = [

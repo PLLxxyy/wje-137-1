@@ -12,15 +12,19 @@ import { VehicleScene } from '../components/scene/VehicleScene';
 import { useVehicleStore } from '../stores/vehicleStore';
 import { useAlertStore } from '../stores/alertStore';
 import { useVehicleScene } from '../hooks/useVehicleScene';
+import { alertTypeNames } from '../constants/typeNames';
 
 export function Overview() {
   const { vehicles, zones, selectVehicle } = useVehicleStore();
   const { alerts } = useAlertStore();
   const stats = useVehicleScene(vehicles);
+  const newAlerts = alerts.filter(a => a.status === 'New');
+  const topAlert = newAlerts.length > 0 ? newAlerts[0] : alerts[0];
+
   return <Shell title="3D 车辆总览" subtitle="车辆模型、区域热力和新报警在同一工作台中联动。">
-    <div className="grid grid-3"><StatPanel label="活跃车辆" value={stats.activeCount} /><StatPanel label="维修车辆" value={stats.maintenanceCount} /><StatPanel label="未处理报警" value={alerts.filter(a => a.status === 'New').length} /></div>
+    <div className="grid grid-3"><StatPanel label="活跃车辆" value={stats.activeCount} /><StatPanel label="维修车辆" value={stats.maintenanceCount} /><StatPanel label="未处理报警" value={newAlerts.length} /></div>
     <div style={{ height: 16 }} />
-    <AlertBanner title="重点报警" detail={alerts[0].description} />
+    <AlertBanner title={`重点报警：${alertTypeNames[topAlert.type]}`} detail={topAlert.description} />
     <div style={{ height: 16 }} />
     <VehicleScene vehicles={vehicles} zones={zones} onSelect={selectVehicle} />
   </Shell>;
