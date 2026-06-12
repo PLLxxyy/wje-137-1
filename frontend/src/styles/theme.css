@@ -1,0 +1,22 @@
+:root {
+  --bg: #f4f1ea;
+  --panel: #fffdf8;
+  --panel-strong: #e8e0d2;
+  --text: #202018;
+  --muted: #716b5f;
+  --line: #d8d0c1;
+  --accent: #0f766e;
+  --accent-2: #b45309;
+  --danger: #b91c1c;
+}
+[data-theme='dark'] {
+  --bg: #171a16;
+  --panel: #20251f;
+  --panel-strong: #2b332b;
+  --text: #f0eadf;
+  --muted: #b7afa0;
+  --line: #3d463b;
+  --accent: #5eead4;
+  --accent-2: #f59e0b;
+  --danger: #f87171;
+}
